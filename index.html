@@ -59,33 +59,41 @@
     document.getElementById('theme').textContent = `Theme: ${webApp.colorScheme || 'light'}`;
 
     async function roastMe() {
-      webApp.MainButton.text = "Roasting... 🔥";
-      webApp.MainButton.show();
+    webApp.MainButton.text = "Roasting... 🔥";
+    webApp.MainButton.show();
 
-      try {
-        const backendUrl = "https://vibe-roast-backend-vercel.vercel.app/api/roast";
+    try {
+      const backendUrl = "https://vibe-roast-backend-vercel.vercel.app/api/roast"; // your URL
 
-        const res = await fetch(backendUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ init_data: webApp.initData })
-        });
+      const res = await fetch(backendUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ init_data: webApp.initData })
+      });
 
-        const data = await res.json();
+      const data = await res.json();
 
-        if (data.success) {
-          webApp.showAlert("Roast sent to chat! Check it 🔥");
-        } else {
-          webApp.showAlert("Backend error - check Vercel logs");
-        }
-      } catch (err) {
-        console.error(err);
-        webApp.showAlert("Backend not ready yet?\n\n1. Redeploy Vercel\n2. Check env vars");
+      if (data.success) {
+        // Show roast INSIDE the Mini App (best UX)
+        document.getElementById('user').innerHTML = `
+          🥶 <b>Your Roast:</b><br><br>
+          ${data.roast}<br><br>
+          🔥 <b>Roast streak: ${data.streak}</b> 🔥
+        `;
+
+        webApp.showAlert(`✅ Roast sent to chat too!\nStreak: ${data.streak} 🔥`);
+      } else {
+        webApp.showAlert("Something went wrong");
       }
-
-      webApp.MainButton.text = "Roast My Vibe 🥶";
-      webApp.MainButton.show();
+    } catch (err) {
+      console.error(err);
+      webApp.showAlert("Backend not responding\n\nCheck Vercel logs");
     }
+
+    webApp.MainButton.text = "Roast My Vibe 🥶";
+    webApp.MainButton.show();
+  }
+
   </script>
 </body>
 </html>
